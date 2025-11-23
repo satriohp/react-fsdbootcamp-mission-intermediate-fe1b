@@ -18,3 +18,4 @@ export default function PosterItem({ src, title, year, badge }) {
     </div>
   );
 }
+  
