@@ -12,7 +12,6 @@ export default function Home() {
     <MainLayout>
       <Hero />
 
-      {/* Menggunakan ContinueWatchCarousel untuk landscape poster */}
       <ContinueWatchCarousel
         title="Melanjutkan Tonton"
         items={movies.continue}
@@ -20,7 +19,6 @@ export default function Home() {
         rightArrowSrc={rightArrow} 
       />
 
-      {/* Menggunakan CarouselSection untuk portrait poster */}
       <CarouselSection
         title="Top Rating Hari Ini"
         items={movies.toprated}

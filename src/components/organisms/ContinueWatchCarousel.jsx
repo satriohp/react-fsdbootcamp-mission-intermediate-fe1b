@@ -6,20 +6,19 @@ export default function ContinueWatchCarousel({ title, items, leftArrowSrc, righ
   const [itemsPerView, setItemsPerView] = useState(6);
   const carouselRef = useRef(null);
 
-  // Hitung jumlah item yang terlihat berdasarkan ukuran layar
   useEffect(() => {
     const updateItemsPerView = () => {
       const width = window.innerWidth;
       if (width < 640) {
-        setItemsPerView(2); // Mobile: 2 items
+        setItemsPerView(2); 
       } else if (width < 768) {
-        setItemsPerView(3); // Small tablet: 3 items
+        setItemsPerView(3); 
       } else if (width < 1024) {
-        setItemsPerView(4); // Tablet: 4 items
+        setItemsPerView(4); 
       } else if (width < 1280) {
-        setItemsPerView(5); // Small desktop: 5 items
+        setItemsPerView(5); 
       } else {
-        setItemsPerView(6); // Large desktop: 6 items
+        setItemsPerView(6); 
       }
     };
 
@@ -28,10 +27,8 @@ export default function ContinueWatchCarousel({ title, items, leftArrowSrc, righ
     return () => window.removeEventListener("resize", updateItemsPerView);
   }, []);
 
-  // Duplikasi items untuk infinite scroll
   const infiniteItems = [...items, ...items, ...items];
 
-  // Scroll ke kiri
   const scrollLeft = () => {
     setCurrentIndex((prev) => {
       const newIndex = prev - 1;
@@ -42,7 +39,6 @@ export default function ContinueWatchCarousel({ title, items, leftArrowSrc, righ
     });
   };
 
-  // Scroll ke kanan
   const scrollRight = () => {
     setCurrentIndex((prev) => {
       const newIndex = prev + 1;
@@ -53,7 +49,6 @@ export default function ContinueWatchCarousel({ title, items, leftArrowSrc, righ
     });
   };
 
-  // Hitung persentase transform
   const getTransformValue = () => {
     const itemWidth = 100 / itemsPerView;
     return -(currentIndex * itemWidth);
@@ -66,7 +61,6 @@ export default function ContinueWatchCarousel({ title, items, leftArrowSrc, righ
       </div>
 
       <div className="relative">
-        {/* Left Arrow */}
         <button
           onClick={scrollLeft}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 bg-black bg-opacity-70 hover:bg-opacity-90 text-white p-1.5 sm:p-2 rounded-full z-10 transition-all duration-200 flex items-center justify-center"
@@ -75,7 +69,6 @@ export default function ContinueWatchCarousel({ title, items, leftArrowSrc, righ
           <img src={leftArrowSrc} alt="Arrow Left" className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
 
-        {/* Carousel Container */}
         <div className="overflow-hidden" ref={carouselRef}>
           <div 
             className="flex gap-3 sm:gap-4 transition-transform duration-500 ease-out"
@@ -95,7 +88,6 @@ export default function ContinueWatchCarousel({ title, items, leftArrowSrc, righ
           </div>
         </div>
 
-        {/* Right Arrow */}
         <button
           onClick={scrollRight}
           className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 bg-black bg-opacity-70 hover:bg-opacity-90 text-white p-1.5 sm:p-2 rounded-full z-10 transition-all duration-200 flex items-center justify-center"
