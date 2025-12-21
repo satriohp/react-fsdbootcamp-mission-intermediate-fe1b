@@ -1,6 +1,17 @@
 import Badge from "../atoms/Badge";
 
-export default function PosterItem({ src, title, year, badge, itemsPerView = 6, onClick }) {
+export default function PosterItem({ 
+  src, 
+  title, 
+  year, 
+  badge, 
+  itemsPerView = 6, 
+  onClick, 
+  isPremium, 
+  isNewEpisode, 
+  topNumber,
+  isHorizontal 
+}) {
   const getItemWidth = () => {
     const gap = itemsPerView > 1 ? (itemsPerView - 1) * 1 : 0; 
     return `calc((100% - ${gap}rem) / ${itemsPerView})`;
@@ -13,18 +24,44 @@ export default function PosterItem({ src, title, year, badge, itemsPerView = 6, 
       onClick={onClick}
     >
       {badge && <Badge>{badge}</Badge>}
-      <img
-        src={src}
-        alt={title}
-        className="rounded-lg w-full h-auto object-cover group-hover:opacity-80 transition-opacity duration-200"
-        style={{ aspectRatio: '2/3' }} 
-      />
-      {title && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent rounded-b-lg p-2 sm:p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <h4 className="text-xs sm:text-sm font-semibold text-white truncate">{title}</h4>
-          {year && <p className="text-[10px] sm:text-xs text-white/70">{year}</p>}
+      
+      <div className={`relative rounded-lg overflow-hidden shadow-lg ${isHorizontal ? 'aspect-video' : 'aspect-[2/3]'}`}>
+        <img
+          src={src}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+        />
+        
+        <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
+          {isNewEpisode && (
+            <div className="bg-[#0F1E93] text-white text-[10px] sm:text-[11px] font-bold px-2.5 py-1 rounded">
+              Episode Baru
+            </div>
+          )}
+          
+          {isPremium && (
+            <div className="bg-[#E5A004] text-white text-[10px] sm:text-[11px] font-bold px-2.5 py-1 rounded">
+              Premium
+            </div>
+          )}
         </div>
-      )}
+
+        {topNumber && (
+          <div className="absolute top-2 right-2 z-10">
+            <div className="bg-[#E50914] text-white rounded-sm px-2 py-1 flex flex-col items-center justify-center leading-none">
+              <span className="text-[9px] font-semibold">Top</span>
+              <span className="text-[13px] font-black">{topNumber}</span>
+            </div>
+          </div>
+        )}
+
+        {title && (
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent rounded-b-lg p-2 sm:p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <h4 className="text-xs sm:text-sm font-semibold text-white truncate">{title}</h4>
+            {year && <p className="text-[10px] sm:text-xs text-white/70">{year}</p>}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

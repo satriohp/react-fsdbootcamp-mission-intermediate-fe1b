@@ -1,56 +1,106 @@
 import { useState } from "react";
 import MainLayout from "../templates/MainLayout";
+import Hero from "../organisms/Hero";
 import CarouselSection from "../organisms/CarouselSection";
-import MovieDetailModal from "../organisms/MovieDetailModal"; 
-import PremiumModal from "../organisms/PremiumModal"; 
-import movies from "../../data/movies";  
-import leftArrow from "/assets/frame72.png";  
+import MovieDetailModal from "../organisms/MovieDetailModal";
+import VideoPlayer from "../organisms/VideoPlayer";
+import movies from "../../data/movies";
+
+import leftArrow from "/assets/frame72.png";
 import rightArrow from "/assets/frame71.png";
 
 export default function Series() {
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
-  const [isUserPremium] = useState(false); 
+  const [activeVideo, setActiveVideo] = useState(null);
 
-  const filterBySeries = (dataArray) => {
-    return dataArray.filter(item => item.type === "series");
-  };
+  // Filter data berdasarkan type "series" dari movies.js
+  const seriesContinue = movies.continue.filter((item) => item.type === "series");
+  const seriesTrending = movies.trending.filter((item) => item.type === "series");
+  const seriesTopRated = movies.toprated.filter((item) => item.type === "series");
+  const seriesNewRelease = movies.newrelease.filter((item) => item.type === "series");
+  const seriesOriginals = movies.trending.slice(0, 6); // Series Persembahan Chill
 
   const handleItemClick = (movie) => {
-    if (movie.isPremium && !isUserPremium) {
-      setShowPremiumModal(true);
-    } else {
-      setSelectedMovie(movie);
-    }
+    setSelectedMovie(movie);
+  };
+
+  const handleStartWatch = (movie) => {
+    setSelectedMovie(null);
+    setActiveVideo(movie);
+    document.body.style.overflow = "hidden";
   };
 
   return (
     <MainLayout>
-      <div className="pt-20 pb-10"> 
-        <h1 className="text-3xl font-bold px-8 mb-4">TV Series</h1>
+      {activeVideo && (
+        <VideoPlayer 
+          movie={activeVideo} 
+          onBack={() => {
+            setActiveVideo(null);
+            document.body.style.overflow = "auto";
+          }} 
+        />
+      )}
+
+      {/* Hero dengan props type="series" */}
+      <Hero type="series" />
+
+      <div className="flex flex-col gap-4 sm:gap-8 pb-10 -mt-12 sm:-mt-16 relative z-20">
         
+        {/* Section 1: Melanjutkan Tontonan Series - HORIZONTAL */}
         <CarouselSection
-          title="Rilis Baru Series"
-          items={filterBySeries(movies.newrelease)}
-          leftArrowSrc={leftArrow}  
-          rightArrowSrc={rightArrow} 
+          title="Melanjutkan Tontonan Series"
+          items={seriesContinue}
+          isHorizontal={true}
+          leftArrowSrc={leftArrow}
+          rightArrowSrc={rightArrow}
           onItemClick={handleItemClick}
         />
 
+        {/* Section 2: Series Persembahan Chill - VERTICAL */}
         <CarouselSection
-          title="Series Terpopuler"
-          items={filterBySeries(movies.continue)}
-          leftArrowSrc={leftArrow}  
-          rightArrowSrc={rightArrow} 
+          title="Series Persembahan Chill"
+          items={seriesOriginals}
+          leftArrowSrc={leftArrow}
+          rightArrowSrc={rightArrow}
+          onItemClick={handleItemClick}
+        />
+
+        {/* Section 3: Top Rating Series Hari Ini - VERTICAL + TOP 10 NUMBERS */}
+        <CarouselSection
+          title="Top Rating Series Hari Ini"
+          items={seriesTopRated}
+          isTopTen={true}
+          leftArrowSrc={leftArrow}
+          rightArrowSrc={rightArrow}
+          onItemClick={handleItemClick}
+        />
+
+        {/* Section 4: Series Trending - VERTICAL */}
+        <CarouselSection
+          title="Series Trending"
+          items={seriesTrending}
+          leftArrowSrc={leftArrow}
+          rightArrowSrc={rightArrow}
+          onItemClick={handleItemClick}
+        />
+
+        {/* Section 5: Rilis Baru - VERTICAL */}
+        <CarouselSection
+          title="Rilis Baru"
+          items={seriesNewRelease}
+          leftArrowSrc={leftArrow}
+          rightArrowSrc={rightArrow}
           onItemClick={handleItemClick}
         />
       </div>
 
       {selectedMovie && (
-        <MovieDetailModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
-      )}
-      {showPremiumModal && (
-        <PremiumModal onClose={() => setShowPremiumModal(false)} />
+        <MovieDetailModal
+          movie={selectedMovie}
+          onClose={() => setSelectedMovie(null)}
+          onStartWatch={handleStartWatch}
+        />
       )}
     </MainLayout>
   );

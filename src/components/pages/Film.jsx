@@ -1,56 +1,75 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import MainLayout from "../templates/MainLayout";
+import Hero from "../organisms/Hero";
 import CarouselSection from "../organisms/CarouselSection";
 import MovieDetailModal from "../organisms/MovieDetailModal"; 
 import PremiumModal from "../organisms/PremiumModal"; 
-import movies from "../../data/movies";  
-import leftArrow from "/assets/frame72.png";  
-import rightArrow from "/assets/frame71.png";
+import VideoPlayer from "../organisms/VideoPlayer"; // IMPORT INI JANGAN LUPA
+import movies from "../../data/movies";   
 
-export default function Film() {
+export default function Films() {
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [activeMovie, setActiveMovie] = useState(null); // Buat mutar film
+  const [premiumTarget, setPremiumTarget] = useState(null); // Buat modal premium
   const [isUserPremium] = useState(false);
 
-  const filterByFilm = (dataArray) => {
-    return dataArray.filter(item => item.type === "film");
-  };
+  // Filter film saja sesuai flow Group 3.jpg
+  const allFilms = useMemo(() => {
+    const combined = [...movies.trending, ...movies.newrelease, ...movies.toprated];
+    return Array.from(new Map(combined.map(item => [item.id, item])).values())
+      .filter(item => item.type === "film");
+  }, []);
 
-  const handleItemClick = (movie) => {
+  const handleStartWatch = (movie) => {
     if (movie.isPremium && !isUserPremium) {
-      setShowPremiumModal(true);
+      setSelectedMovie(null);
+      setPremiumTarget(movie);
     } else {
-      setSelectedMovie(movie);
+      setSelectedMovie(null);
+      setActiveMovie(movie); 
     }
   };
 
   return (
     <MainLayout>
-      <div className="pt-20 pb-10">
-        <h1 className="text-3xl font-bold px-8 mb-4">Film Layar Lebar</h1>
+      <Hero />
+      
+      <div className="flex flex-col gap-6 md:gap-12 pb-10 px-4 md:px-0">
+        <CarouselSection
+          title="Film Layar Lebar"
+          items={allFilms}
+          onItemClick={(movie) => setSelectedMovie(movie)}
+        />
         
         <CarouselSection
-          title="Film Trending"
-          items={filterByFilm(movies.trending)}
-          leftArrowSrc={leftArrow}  
-          rightArrowSrc={rightArrow} 
-          onItemClick={handleItemClick}
-        />
-
-        <CarouselSection
-          title="Top Rating Film"
-          items={filterByFilm(movies.toprated)}
-          leftArrowSrc={leftArrow}  
-          rightArrowSrc={rightArrow} 
-          onItemClick={handleItemClick}
+          title="Rilis Baru"
+          items={allFilms.slice(0, 6)}
+          onItemClick={(movie) => setSelectedMovie(movie)}
         />
       </div>
 
+      
+      {/* 1. Detail Modal */}
       {selectedMovie && (
-        <MovieDetailModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
+        <MovieDetailModal 
+          movie={selectedMovie} 
+          onClose={() => setSelectedMovie(null)}
+          onStartWatch={handleStartWatch} 
+        />
       )}
-      {showPremiumModal && (
-        <PremiumModal onClose={() => setShowPremiumModal(false)} />
+
+      {premiumTarget && (
+        <PremiumModal 
+          movie={premiumTarget} 
+          onClose={() => setPremiumTarget(null)} 
+        />
+      )}
+
+      {activeMovie && (
+        <VideoPlayer 
+          movie={activeMovie} 
+          onBack={() => setActiveMovie(null)} 
+        />
       )}
     </MainLayout>
   );
